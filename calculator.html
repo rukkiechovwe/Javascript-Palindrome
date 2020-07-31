@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Javascript Calculator</title>
+	<link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+	<script src="https://kit.fontawesome.com/25874ebc23.js" crossorigin='anonymous'></script>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="screen">
+			<p id="history-value"></p>
+			<p id="output-value"></p>
+		</div>
+		<div class="keys">
+			<div class="row row1">
+				<button class="operator" id="+" type="button">+</button>
+				<button class="operator" id="-" type="button">-</button>
+				<button class="operator" id="*" type="button">&times</button>
+				<button class="operator" id="/" type="button" value="divide">/</button>
+			</div>
+			<div class="row row2">
+				<button class="number" id="7" type="button">7</button>
+				<button class="number" id="8" type="button">8</button>
+				<button class="number" id="9" type="button">9</button>
+				<button class="operator" id="backspace" type="button"><i class="fas fa-backspace"></i></button>
+			</div>
+			<div class="row row3">
+				<button class="number" id="4" type="button">4</button>
+				<button class="number" id="5" type="button">5</button>
+				<button class="number" id="6" type="button">6</button>
+				<button class="operator" id="clear" type="button">C</button>
+			</div>
+			<div class="row row4">
+				<button class="number" id="1" type="button">1</button>
+				<button class="number" id="2" type="button">2</button>
+				<button class="number" id="3" type="button">3</button>
+				<button class="operator" id="." type="button" value="point">.</button>
+			</div>
+			<div class="row row5">
+				<button class="number" id="0" type="button" value="zero">0</button>
+				<button class="operator" id="=" type="button" value="equal">=</button>
+			</div>
+		</div>
+	</div>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			background: #000428;  /* fallback for old browsers */
+			background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
+			background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			font-family: 'Poppins',sans-serif;
+			display: flex;
+		    justify-content: center;
+		    align-items: center;
+			width: 100%;
+		}
+		.wrapper{
+			display: flex;
+		    flex-direction: column;
+		    width: 300px;
+		    align-items: center;
+		    background-color: #fff;
+		    font-size: 18px;
+		    margin-top: 40px;
+		    margin-bottom: 30px;
+		    border-radius: 15px;
+    		box-shadow: 0px 3px 10px 2px rgba(0, 0, 0, .4);
+		}
+		.screen{
+		    width: 100%;
+		    text-align: right;
+		    background-color: #fff;
+		    border-bottom: 1px solid #ddd;
+		}
+		#history-value{
+			padding: 5px 20px;
+			height: 25px;
+			color: #9a9a9a;;
+			font-size: 16px;
+		}
+		#output-value{
+			padding: 5px 20px;
+			height: 25px;
+		}
+		.keys{
+			width: 100%;
+			padding: 5px;
+		}
+		.row{
+			display: flex;
+    		justify-content: space-around;
+		}
+		.row5{
+			justify-content: flex-end;
+    		margin-right: 18px;
+		}
+		button{
+			padding: 10px 15px;
+			border: none;
+		    border-radius: 50%;
+		    margin: 10px 0;
+		    background-color: transparent;
+		    color: #222;
+		    font-size: 18px;
+		    border: 2px solid transparent;
+		    cursor: pointer;
+		    transition: .3s ease-in-out;
+		}
+		button:hover{
+			border: 2px solid #044840;
+		}
+		button:focus-within{
+			outline: none;
+		    color: #fff;
+		    background: #044840;
+		    box-shadow: 1px 1px 3px 0px rgba(128, 128, 128, 0.8);
+		}
+		button[value ="point"]{
+			padding: 10px 17px;
+		}
+		button[value ="divide"]{
+			padding: 10px 17px;
+		}
+		button[value ="zero"]{
+			margin-right: 108px;
+		}
+		#clear{
+			padding: 10px 14px;
+		}
+		#backspace{
+			padding: 10px 13px;
+		}
+		#backspace i{
+			font-size: 14px
+		}
+	</style>
+	<script type="text/javascript">
+		let getHistory =()=> document.getElementById('history-value').innerText;
+		let printHistory = (num)=>{
+			document.getElementById('history-value').innerText = num;
+		}
+
+		let getOutput =()=>document.getElementById('output-value').innerText;
+		let printOutput = (num)=>{
+			if (num == ""){
+				document.getElementById('output-value').innerText = num
+			}else{
+				document.getElementById('output-value').innerText = getFormattedNumber(num);
+			}
+		}
+
+		let getFormattedNumber =(num)=>{
+			if (num=="-") {
+				return ""
+			}
+			let n = Number(num);
+			let value = n.toLocaleString("en");
+			return value
+		}
+		let reverseNumberFormat =(num)=>Number(num.replace(/,/g,""));
+
+		let operator = document.querySelectorAll('.operator');
+		for (let i = 0; i < operator.length; i++) {
+			operator[i].addEventListener('click', ()=>{
+				//console.log("the operator clicked",operator[i].id);
+				if (operator[i].id == "clear") {
+					printHistory("")
+					printOutput("")
+				}else if(operator[i].id == "backspace"){
+					let output=reverseNumberFormat(getOutput()).toString();
+					if (output){
+						output=output.substr(0,output.length-1)
+						printOutput(output)
+					}
+				}
+				else{
+					let output = getOutput();
+					let history = getHistory();
+					if (output!="") {
+						output=reverseNumberFormat(output);
+						history+=output;
+						if (operator[i].id=="=") {
+							let result = eval(history);
+							printOutput(result);
+							printHistory("");
+						}else{
+							history+=operator[i].id
+							printHistory(history);
+							printOutput("")
+						}
+					}
+				}
+			})
+		}
+		let number = document.querySelectorAll('.number');
+		for (let i = 0; i < number.length; i++) {
+			number[i].addEventListener('click', ()=>{
+				//console.log("the number clicked");
+				let output = reverseNumberFormat(getOutput())
+				if (output != NaN) {
+					output += number[i].id
+					printOutput(output)
+					//console.log(typeof(output))
+				}
+			})
+		}
+	</script>
+</body>
+</html>
